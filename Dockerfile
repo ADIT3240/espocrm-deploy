@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
         libxml2-dev \
         default-mysql-client \
         unzip \
+        libicu-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install mysqli pdo pdo_mysql zip gd intl bcmath \
     && a2enmod rewrite \
