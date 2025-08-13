@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Install required system libraries and PHP extensions
+# Install required system libraries and PHP extensions for both MySQL and PostgreSQL
 RUN apt-get update && apt-get install -y \
         libzip-dev \
         libpng-dev \
@@ -11,8 +11,9 @@ RUN apt-get update && apt-get install -y \
         unzip \
         libicu-dev \
         libpq-dev \
+        default-mysql-client \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_pgsql zip gd intl bcmath \
+    && docker-php-ext-install pdo_mysql mysqli pdo_pgsql zip gd intl bcmath \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
@@ -38,5 +39,4 @@ RUN chown -R www-data:www-data /var/www/html/data \
 
 # Expose port 80
 EXPOSE 80
-
 
