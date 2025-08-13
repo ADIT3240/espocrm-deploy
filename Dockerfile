@@ -1,10 +1,15 @@
 FROM php:8.2-apache
 
-# Install required PHP extensions for EspoCRM
-RUN docker-php-ext-install mysqli pdo pdo_mysql
-
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+# Install required system libraries and PHP extensions
+RUN apt-get update && apt-get install -y \
+        libzip-dev \
+        libpng-dev \
+        libjpeg-dev \
+        libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install mysqli pdo pdo_mysql zip gd \
+    && a2enmod rewrite \
+    && rm -rf /var/lib/apt/lists/*
 
 # Allow .htaccess usage globally
 RUN sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
@@ -28,3 +33,5 @@ RUN chown -R www-data:www-data /var/www/html/data \
 
 # Expose port 80
 EXPOSE 80
+
+
