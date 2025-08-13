@@ -37,8 +37,9 @@ RUN mkdir -p /var/www/html/data/logs \
     && chmod -R 775 /var/www/html/data/logs
 
 
-# Allow .htaccess usage globally
-RUN sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+# Allow .htaccess in EspoCRM public directory
+RUN echo "<Directory /var/www/html/public>\n    AllowOverride All\n</Directory>" >> /etc/apache2/apache2.conf
+
 
 # Set DocumentRoot to the 'public' folder
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
