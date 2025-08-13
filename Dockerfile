@@ -8,14 +8,13 @@ RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libonig-dev \
         libxml2-dev \
-        default-mysql-client \
         unzip \
         libicu-dev \
+        libpq-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install mysqli pdo_mysql zip gd intl bcmath \
+    && docker-php-ext-install pdo_pgsql zip gd intl bcmath \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
-
 
 # Allow .htaccess usage globally
 RUN sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
