@@ -1,5 +1,3 @@
-FROM php:8.2-apache
-
 # Install required system libraries and PHP extensions
 RUN apt-get update && apt-get install -y \
         libzip-dev \
@@ -12,9 +10,10 @@ RUN apt-get update && apt-get install -y \
         unzip \
         libicu-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install mysqli pdo pdo_mysql zip gd intl bcmath \
+    && docker-php-ext-install mysqli pdo_mysql zip gd intl bcmath \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Allow .htaccess usage globally
 RUN sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
