@@ -1,6 +1,7 @@
+# Base image
 FROM php:8.2-apache
 
-# Install required system libraries and PHP extensions for both MySQL and PostgreSQL
+# Install system libraries and PHP extensions
 RUN apt-get update && apt-get install -y \
         libzip-dev \
         libpng-dev \
@@ -11,11 +12,17 @@ RUN apt-get update && apt-get install -y \
         unzip \
         libicu-dev \
         libpq-dev \
-        default-mysql-client \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql mysqli pdo_pgsql zip gd intl bcmath \
+    && docker-php-ext-install pdo_pgsql pdo_mysql zip gd intl bcmath exif \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
+
+# Set PHP recommended values
+RUN echo "max_execution_time=180" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "max_input_time=180" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "memory_limit=256M" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "post_max_size=20M" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "upload_max_filesize=20M" >> /usr/local/etc/php/conf.d/custom.ini
 
 # Allow .htaccess usage globally
 RUN sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
@@ -32,11 +39,19 @@ COPY . /var/www/html/
 # Set working directory
 WORKDIR /var/www/html/
 
-# Fix permissions for 'data' folder
+# Fix permissions for required directories
 RUN chown -R www-data:www-data /var/www/html/data \
+    && chown -R www-data:www-data /var/www/html/client/custom \
+    && chown -R www-data:www-data /var/www/html/custom/Espo/Custom \
+    && chown -R www-data:www-data /var/www/html/custom/Espo/Modules \
     && find /var/www/html/data -type d -exec chmod 775 {} + \
-    && find /var/www/html/data -type f -exec chmod 664 {} +
+    && find /var/www/html/client/custom -type d -exec chmod 775 {} + \
+    && find /var/www/html/custom/Espo/Custom -type d -exec chmod 775 {} + \
+    && find /var/www/html/custom/Espo/Modules -type d -exec chmod 775 {} + \
+    && find /var/www/html/data -type f -exec chmod 664 {} + \
+    && find /var/www/html/client/custom -type f -exec chmod 664 {} + \
+    && find /var/www/html/custom/Espo/Custom -type f -exec chmod 664 {} + \
+    && find /var/www/html/custom/Espo/Modules -type f -exec chmod 664 {} +
 
 # Expose port 80
 EXPOSE 80
-
