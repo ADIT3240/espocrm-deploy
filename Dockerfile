@@ -24,6 +24,19 @@ RUN echo "max_execution_time=180" >> /usr/local/etc/php/conf.d/custom.ini \
     && echo "post_max_size=20M" >> /usr/local/etc/php/conf.d/custom.ini \
     && echo "upload_max_filesize=20M" >> /usr/local/etc/php/conf.d/custom.ini
 
+    # Enable PHP error display and logging for debugging
+RUN echo "display_errors=On" >> /usr/local/etc/php/conf.d/debug.ini \
+    && echo "display_startup_errors=On" >> /usr/local/etc/php/conf.d/debug.ini \
+    && echo "error_reporting=E_ALL" >> /usr/local/etc/php/conf.d/debug.ini \
+    && echo "log_errors=On" >> /usr/local/etc/php/conf.d/debug.ini \
+    && echo "error_log=/var/www/html/data/logs/php_error.log" >> /usr/local/etc/php/conf.d/debug.ini
+
+# Create logs directory
+RUN mkdir -p /var/www/html/data/logs \
+    && chown -R www-data:www-data /var/www/html/data/logs \
+    && chmod -R 775 /var/www/html/data/logs
+
+
 # Allow .htaccess usage globally
 RUN sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
