@@ -21,5 +21,10 @@ COPY . /var/www/html/
 # Set working directory
 WORKDIR /var/www/html/
 
+# Fix permissions for 'data' folder
+RUN chown -R www-data:www-data /var/www/html/data \
+    && find /var/www/html/data -type d -exec chmod 775 {} + \
+    && find /var/www/html/data -type f -exec chmod 664 {} +
+
 # Expose port 80
 EXPOSE 80
